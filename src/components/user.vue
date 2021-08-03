@@ -27,10 +27,12 @@
         </tr>
     </table>
 </div>
+<!--
 <div class="pagination">
     <button class="active">1</button>
     <button>2</button>
 </div>
+-->
 <div class="footer">
     <input type="checkbox" class="sortCheckbox" id="sortCheckbox" v-on:click="sortList()" v-model="sortlistByDate">
     <label for="sortCheckbox">Sort By Date Of Birth</label>
