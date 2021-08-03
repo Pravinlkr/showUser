@@ -19,7 +19,7 @@
             <td>{{user.dob}}</td>
             <td>{{user.password}}</td>
             <td>
-                <button class="edit">Edit</button>
+                <button class="edit" v-on:click="editUserNo(user.id)">Edit</button>
             </td>
             <td>
                 <button class="delete" v-on:click="deleteUser(user.id)">Delete</button>
@@ -27,11 +27,15 @@
         </tr>
     </table>
 </div>
+<div class="pagination">
+    <button class="active">1</button>
+    <button>2</button>
+</div>
 <div class="footer">
     <input type="checkbox" class="sortCheckbox" id="sortCheckbox" v-on:click="sortList()" v-model="sortlistByDate">
     <label for="sortCheckbox">Sort By Date Of Birth</label>
 </div>
-<form-model :showModel="showModelValue" @updateModel="updateModel" @addNewUser="addNewUser"></form-model>
+<form-model :editUser="edituserData" :showModel="showModelValue" @updateModel="updateModel" @addNewUser="addNewUser" @updateUser="updateUser"></form-model>
 </template>
 
 <script>
@@ -53,11 +57,46 @@ export default {
                 ],
             filter:'nonsorted',
             filteredList:[],
-            sortlistByDate: false
+            sortlistByDate: false,
+            edituserData:{},
+            paginationArray:[]
         }
     },
     methods:{
+        editUserNo(id){
+            this.userList.forEach(element => {
+                if(element.id == id){
+                    this.edituserData = element;
+                    this.showModel();
+                } 
+            });
+        },
+        updateUser(value){
+            let eid = value.id;
+            let len = this.userList.length;
+            let i=0;
+            for(i=0; i<len; i++){
+                if(this.userList[i].id == eid){
+                    this.userList[i].name = value.name;
+                    this.userList[i].email = value.email;
+                    this.userList[i].dob = value.dob;
+                    this.userList[i].password = value.password;
+                }
+            }
+            this.filteredList = [];
+            this.updateList();
+        },
         updateList(){
+            //below is code for pagination section
+            /*let len = this.userList.length;
+            let noOfPages = len/5;
+            let k = 1;
+            for(k=1; k<=noOfPages; k++){
+                this.paginationArray.push(k);
+            }
+            console.log(this.paginationArray);*/
+
+            //below is code for sorted or non sorted list according to filter
             if(this.filter == 'nonsorted'){
                 this.userList.forEach(element => {
                     this.filteredList.push(element);
@@ -188,6 +227,23 @@ button.delete{
     height: 30px;
     width: 70%;
 }
+
+.pagination{
+    text-align: center;
+    width:80%;
+    margin:40px auto;
+}
+.pagination button{
+    margin-right: 10px;
+    background-color: white;
+    height:30px;
+    width: 30px;
+    border:1px solid #ccc
+}
+.pagination button.active{
+    background-color: #ccc;
+}
+
 .footer{
     height: 50px;
     background-color: #ccc;
