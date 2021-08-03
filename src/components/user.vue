@@ -13,7 +13,7 @@
             <th>Edit</th>
             <th>Delete</th>
         </tr>
-        <tr v-for="(user,index) in userList" v-bind:key="index">
+        <tr v-for="(user,index) in filteredList" v-bind:key="index">
             <td>{{user.name}}</td>
             <td>{{user.email}}</td>
             <td>{{user.dob}}</td>
@@ -22,16 +22,16 @@
                 <button class="edit">Edit</button>
             </td>
             <td>
-                <button class="delete">Delete</button>
+                <button class="delete" v-on:click="deleteUser(user.id)">Delete</button>
             </td>
         </tr>
     </table>
 </div>
 <div class="footer">
-    <input type="checkbox" class="sortCheckbox" id="sortCheckbox">
+    <input type="checkbox" class="sortCheckbox" id="sortCheckbox" v-on:click="sortList()" v-model="sortlistByDate">
     <label for="sortCheckbox">Sort By Date Of Birth</label>
 </div>
-<form-model :showModel="showModelValue" @updateModel="updateModel"></form-model>
+<form-model :showModel="showModelValue" @updateModel="updateModel" @addNewUser="addNewUser"></form-model>
 </template>
 
 <script>
@@ -45,24 +45,91 @@ export default {
         return{
             showModelValue:false,
             userList:[
-                {name:'Manish Singh', email:'manishsingh@gmail.com', dob:'21-01-1995', password:'mainsh123'},
-                {name:'Vikkey Kumar', email:'kumarVikkey@gmail.com', dob:'02-03-1993', password:'vikkey123'},
-                {name:'Pradeep Yadav', email:'pradeep@gmail.com', dob:'21-01-1997', password:'pradeep007'},
-                {name:'Abhishek Ranjan', email:'arj@gmail.com', dob:'21-01-1998', password:'arj@1234'},
-                {name:'Ankit Kumar', email:'akumar001@gmail.com', dob:'21-01-1996', password:'akumar001'},
-                ]
+                {id:2, name:'Manish Singh', email:'manishsingh@gmail.com', dob:'1995-02-25', password:'mainsh123'},
+                {id:4, name:'Vikkey Kumar', email:'kumarVikkey@gmail.com', dob:'1993-04-07', password:'vikkey123'},
+                {id:6, name:'Pradeep Yadav', email:'pradeep@gmail.com', dob:'1997-01-18', password:'pradeep007'},
+                {id:8, name:'Abhishek Ranjan', email:'arj@gmail.com', dob:'1998-01-26', password:'arj@1234'},
+                {id:10, name:'Ankit Kumar', email:'akumar001@gmail.com', dob:'1996-10-15', password:'akumar001'},
+                ],
+            filter:'nonsorted',
+            filteredList:[],
+            sortlistByDate: false
         }
     },
     methods:{
+        updateList(){
+            if(this.filter == 'nonsorted'){
+                this.userList.forEach(element => {
+                    this.filteredList.push(element);
+                });
+            }
+            if(this.filter == 'sorted'){
+                this.userList.forEach(element => {
+                    this.filteredList.push(element);
+                });
+                let lenoforiginalarray = this.filteredList.length;
+                let i = 0;
+                let j = 0;
+                for(i=0; i<lenoforiginalarray; i++){
+                    let dob1 = this.filteredList[i].dob;
+
+                    for(j=i+1; j<lenoforiginalarray; j++){
+                        let dob2 = this.filteredList[j].dob;
+
+                        if(new Date(dob1) > new Date(dob2)){
+                            let temp = this.filteredList[i];
+                            this.filteredList[i] = this.filteredList[j];
+                            this.filteredList[j] = temp;
+                        }
+                    }
+                }
+            }
+
+        },
         showModel(){
-            console.log("called");
             this.showModelValue = true;
-            console.log(this.showModelValue);
         },
         updateModel(){
-            console.log(this.showModelValue);
             this.showModelValue = false;
+        },
+        addNewUser(value){
+            let len = this.userList.length;
+            let lastData = this.userList[len-1];
+            let newid = lastData.id+2;
+            this.userList.push({id:newid, name:value.name, email:value.email, dob:value.dob, password:value.password});
+
+            this.filteredList = [];
+            this.updateList();
+        },
+        deleteUser(id){
+            var len = this.userList.length;
+            let i = 0;
+            let deleteIndex = 0;
+            for(i=0; i<len; i++){
+                if(this.userList[i].id == id){
+                    deleteIndex = i;
+                }
+            }
+            this.userList.splice(deleteIndex,1);
+            this.filteredList = [];
+            this.updateList();
+        },
+        sortList(){
+            if(this.sortlistByDate == false){
+                this.filter = 'sorted';
+                this.filteredList = [];
+                this.updateList();
+            }
+            else{
+                this.filter = 'nonsorted';
+                this.filteredList = [];
+                this.updateList();
+            }
+            
         }
+    },
+    mounted(){
+        this.updateList();
     }
 }
 </script>

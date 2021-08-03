@@ -6,23 +6,24 @@
             <button v-on:click="closeModel()">X</button>
         </div>
         <div class="modelBody">
+            <p class="errormsg">{{errorMessage}}</p>
             <label for="email">Email :</label><br />
-            <input type="email" class="email" id="email" placeholder="Email"><br />
+            <input type="email" class="email" id="email" placeholder="Email" v-model="email"><br />
 
             <label for="name">Full Name :</label><br />
-            <input type="text" class="name" id="name" placeholder="Full Name"><br />
+            <input type="text" class="name" id="name" placeholder="Full Name" v-model="name"><br />
 
             <label for="dob">Date Of Birth :</label><br />
-            <input type="date" class="dob" id="dob" placeholder="Date Of Birth"><br />
+            <input type="date" class="dob" id="dob" placeholder="Date Of Birth" v-model="dob"><br />
 
             <label for="password">Password :</label><br />
-            <input type="password" class="password" id="password" placeholder="Password"><br />
+            <input type="password" class="password" id="password" placeholder="Password" v-model="password"><br />
 
             <label for="cpassword">Confirm Password :</label><br />
-            <input type="password" class="cpassword" id="cpassword" placeholder="Confirm Password"><br />
-            <input type="checkbox" class="termCondition" id="termCondition">
+            <input type="password" class="cpassword" id="cpassword" placeholder="Confirm Password" v-model="cpassword"><br />
+            <input type="checkbox" class="termCondition" id="termCondition" v-model="termCondition">
             <label for="termCondition" class="termConditionLabel">I accept all terms and conditions.</label><br />
-            <button class="add">Add</button>
+            <button class="add" v-on:click="addData()">Add</button>
         </div>
     </div>
 </div>
@@ -37,9 +38,39 @@ export default {
             default:false
         }
     },
+    data(){
+        return{
+            errorMessage:'',
+            name:'',
+            email:'',
+            dob:'',
+            password:'',
+            cpassword:'',
+            termCondition:true
+        }
+    },
     methods: {
         closeModel() {
             this.$emit('updateModel');
+        },
+        addData(){
+            if(this.name.length>0 && this.email.length > 0 && this.dob.length>0 && this.password.length > 0 && this.cpassword.length>0 && this.termCondition == true){
+                if(this.password == this.cpassword){
+                    this.$emit('addNewUser', {name:this.name, email:this.email, dob:this.dob, password:this.password});
+                    this.$emit('updateModel');
+                    this.name = '';
+                    this.email = '';
+                    this.dob = '';
+                    this.password = '';
+                    this.cpassword = '';
+                }
+                else{
+                    this.errorMessage = 'Password and confirm password are not same, try again'
+                }
+            }
+            else{
+                this.errorMessage = "All fields are required, please try again"
+            }
         }
     }
 }
@@ -88,7 +119,11 @@ export default {
     margin: 2% 2%;
     float: right;
 }
-
+.errormsg{
+    text-align: center;
+    font-size: 15px;
+    color:orange;
+}
 label {
     font-size: 15px;
     font-weight: 500;
