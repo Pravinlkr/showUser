@@ -18,6 +18,10 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  margin-top: 60px;
+}
+body{
+  margin:0;
+  padding:0;
+  overflow-x: hidden;
 }
 </style>
